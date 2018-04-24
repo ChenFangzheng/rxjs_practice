@@ -1,33 +1,40 @@
-import Rx from 'rxjs/Rx';
-import { Observable, Subscription, Observer } from 'rxjs';
+import { timer } from 'rxjs/observable/timer';
+import { interval } from 'rxjs/observable/interval';
+import { map, tap, retryWhen, delayWhen } from 'rxjs/operators';
 
-Rx.Observable.prototype.multiplyByTen = function multiplyByTen() {
-  var input = this;
-  return Rx.Observable.create(function subscribe(observer) {
-    input.subscribe({
-      next: (v) => observer.next(10 * v),
-      error: (err) => observer.error(err),
-      complete: () => observer.complete()
-    });
-  });
-}
-const observable = Rx.Observable.from([1, 2, 3, 4]).multiplyByTen();
+// const message = interval(1000);
+// const delayForFiveSeconds = () => timer(5000);
+// const delayWhenExample = message.pipe(delayWhen(delayForFiveSeconds));
 
-observable.subscribe((x: any) => console.log(x));
+// const subscribe = delayWhenExample.subscribe(val => console.log(val));
 
-// function multiplyByTen(input: Observable<any>) {
 
-//     const output = Rx.Observable.create(function subscribe(observer: Observer<any>) {
-//         input.subscribe({
-//             next: (v: number) => observer.next(10 * v),
-//             error: (error: any) => observer.error(error),
-//             complete: () => observer.complete()
-//         })
-//     });
+//emit value every 1s
+const source = interval(1000);
+const example = source.pipe(
+    map(val => {
+        if (val > 5) {
+            //error will be picked up by retryWhen
+            throw val;
+        }
+        return val;
+    }),
+    retryWhen(errors =>
+        errors.pipe(
+            //log error message
+            tap(val => console.log(`Value ${val} was too high!`)),
+            //restart in 5 seconds
+            delayWhen(val => timer(val * 1000))
+        )
+    )
+);
 
-//     return output;
-// }
+// const subscribe = example.subscribe(val => console.log(val));
 
-// const input = Rx.Observable.from([1, 2, 3, 4]);
-// const output = multiplyByTen(input);
-// output.subscribe((x: number) => console.log(x));
+/**interval */
+// const numbers = Rx.Observable.of(10, 20, 30);
+// const letters = Rx.Observable.of('a', 'b', 'c');
+// const interval = Rx.Observable.interval(1000);
+
+// const result = numbers.concat(letters).concat(interval);
+// result.subscribe(x => console.log(x));
