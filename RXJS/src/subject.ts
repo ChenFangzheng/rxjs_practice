@@ -1,7 +1,10 @@
 import Rx from 'rxjs/Rx';
 import { Observable, Subscription } from 'rxjs';
 
-/** AsyncSubject*/
+/** AsyncSubject
+ * The AsyncSubject is a variant where only the last value of the Observable execution is sent to its observers, 
+ * and only when the execution completes.
+*/
 var subject = new Rx.AsyncSubject();
 
 subject.subscribe({
@@ -20,7 +23,9 @@ subject.subscribe({
 subject.next(5);
 subject.complete();
 
-/**ReplaySubject */
+/**ReplaySubject 
+ * A ReplaySubject records multiple values from the Observable execution and replays them to new subscribers
+*/
 // var subject = new Rx.ReplaySubject(100, 500 /* windowTime */);
 
 // subject.subscribe({
@@ -56,7 +61,16 @@ subject.complete();
 
 
 
-/**BehaviorSubject */
+/**BehaviorSubject 
+ * BehaviorSubjects are useful for representing "values over time". 
+ * For instance, an event stream of birthdays is a Subject, but the stream of a person's age would be a BehaviorSubject.
+ * observerA: 0
+ * observerA: 1
+ * observerA: 2
+ * observerB: 2
+ * observerA: 3
+ * observerB: 3
+*/
 // const subject = new Rx.BehaviorSubject(0);
 
 // subject.subscribe({
@@ -73,7 +87,12 @@ subject.complete();
 // subject.next(3);
 
 
-/**Reference counting */
+
+
+/**Reference counting 
+ * automatically connect when the first Observer arrives, 
+ * and automatically cancel the shared execution when the last Observer unsubscribes
+*/
 // const source = Rx.Observable.interval(500);
 // const subject = new Rx.Subject();
 // const refCounted = source.multicast(subject).refCount();
@@ -104,7 +123,9 @@ subject.complete();
 // }, 2000);
 
 
-/**Multicasted Observables */
+/**Multicasted Observables 
+ * A multicasted Observable uses a Subject under the hood to make multiple Observers see the same Observable execution.
+*/
 
 // const source = Rx.Observable.from([1, 2, 3, 4]);
 // const subject = new Rx.Subject();
@@ -121,7 +142,11 @@ subject.complete();
 // multicasted.connect();
 
 
-/**Subject as a observer */
+/**Subject as a observer 
+ * Since a Subject is an Observer, 
+ * this also means you may provide a Subject as the argument to the subscribe of any Observable, 
+ * like the example below shows:
+*/
 
 // const subject1 = new Rx.Subject();
 
@@ -140,7 +165,10 @@ subject.complete();
 
 
 
-/**Subject as a observerable */
+/**Subject as a observerable 
+ * A Subject is like an Observable, but can multicast to many Observers. 
+ * Subjects are like EventEmitters: they maintain a registry of many listeners.
+*/
 
 // const subject = new Rx.Subject();
 
